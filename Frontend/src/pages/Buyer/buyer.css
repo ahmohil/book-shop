@@ -1,0 +1,60 @@
+.order-page {
+	margin: 4rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.order-table {
+	margin-top: 3rem;
+}
+
+table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 10px; /* Adjust the spacing as needed */
+}
+
+th,
+td {
+	padding: 10px; /* Adjust the padding as needed */
+	text-align: left;
+}
+
+.order-actions {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.totalBill {
+	display: flex;
+	justify-content: space-between;
+}
+
+.all-orders {
+	margin: 2rem;
+}
+
+.order-card-heading {
+	display: flex;
+	justify-content: space-between;
+}
+
+.book-info {
+	margin-top: 1rem;
+}
+
+.order-edit-btn {
+	display: flex;
+	justify-content: flex-end;
+	gap: 1rem;
+}
+
+.delete-btn-order {
+	margin-right: 1rem;
+}
+
+.page-navigation {
+	display: flex;
+	justify-content: center;
+}

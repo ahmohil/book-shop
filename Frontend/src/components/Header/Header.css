@@ -1,0 +1,65 @@
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-inline: 2rem;
+	padding-block: 0.7rem;
+	background-color: white;
+}
+
+.logo-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.header-logo {
+	width: 170px;
+}
+
+button {
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: none;
+	outline: none;
+	appearance: none;
+}
+
+.logout-button {
+	flex: 0;
+	padding: 12px 20px;
+	background-color: var(--primary-color);
+	color: white;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+@media (max-width: 600px) {
+	.header {
+		padding-inline: 36px;
+	}
+
+	.header-logo {
+		width: 140px;
+	}
+}
+
+@media (max-width: 400px) {
+	.header-logo {
+		width: 120px;
+	}
+}
+
+.screen {
+	height: 100vh;
+	width: 100vw;
+}
+
+.header-btn {
+	margin-left: 2rem;
+}
+
+.header-logo-text:hover {
+	cursor: pointer;
+}

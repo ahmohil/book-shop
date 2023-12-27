@@ -1,0 +1,24 @@
+.stepper-btn {
+	align-items: right;
+}
+
+.stepper-field {
+	margin-block: 20px;
+}
+
+.stepper-btn-container {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.otp-btns {
+	justify-content: space-between;
+	width: 100%;
+	display: flex;
+}
+
+.reset-pass {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}

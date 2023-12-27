@@ -1,0 +1,42 @@
+.home-heading {
+	display: flex;
+	justify-content: center;
+}
+
+.home {
+	margin: 2rem;
+}
+
+.books-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.book-card,
+.order-card {
+	box-shadow: 0 2px 4px rgb(0 0 0 / 25%);
+	padding-inline: 2rem;
+	padding-block: 2rem;
+	margin-block: 2rem;
+	border-radius: 10px;
+}
+
+.book-card-line-1 {
+	display: flex;
+	justify-content: space-between;
+}
+
+.book-card-icons {
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+}
+
+.cart {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.book-card-icons:hover {
+	cursor: pointer;
+}
