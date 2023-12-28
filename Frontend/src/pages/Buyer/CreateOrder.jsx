@@ -6,7 +6,9 @@ import Cookies from "js-cookie";
 import Button from "@mui/material/Button";
 import "./buyer.css";
 import axios from "axios";
+import { toast } from "react-toastify";
 
+import { useAuth } from "../../context/AuthProvider";
 const CreateOrder = ({}) => {
 	const [bookCounts, setBookCounts] = useState({});
 	const [bookTitles, setBookTitles] = useState({});
@@ -14,21 +16,20 @@ const CreateOrder = ({}) => {
 	const [totalBill, setTotalBill] = useState(null);
 	const [billCalculated, setBillCalculated] = useState(false);
 	const [role, setRole] = useState(null);
+	const { user } = useAuth();
+
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	useEffect(() => {
-		let user = JSON.parse(localStorage.getItem("user"));
 		if (user) {
 			setRole(user.role);
 		}
 		const fetchData = () => {
 			const jwtToken = Cookies.get("jwt");
 			const { books } = location.state || {};
-			console.log("First use effect before setting book counts");
 			setBookCounts(books);
 			setBillCalculated(false);
-			console.log("1st use effect after setting book counts");
 			try {
 				const titlesFetched = Promise.all(
 					Object.keys(books).map(async (key) => {
@@ -64,11 +65,10 @@ const CreateOrder = ({}) => {
 		};
 
 		fetchData();
-	}, []);
+	}, [user]);
 
 	useEffect(() => {
 		let bill = 0;
-		console.log("Inside 2nd use Effect");
 		if (billCalculated) {
 			console.log(totalBill);
 			Object.keys(bookCounts).forEach((bookId) => {
@@ -99,7 +99,6 @@ const CreateOrder = ({}) => {
 	const createOrder = async () => {
 		const jwtToken = Cookies.get("jwt");
 		if (role == "seller") {
-			alert("You can only sell books");
 			return;
 		}
 

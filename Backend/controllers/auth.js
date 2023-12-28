@@ -100,14 +100,14 @@ exports.forgotPassword = async (req, res, next) => {
 	}
 
 	await otpMiddleware.sendOTP(req, res, next);
-	return res.status(200).json({ message: "Enter the otp received on your email" });
+	return res.status(200).json({ isValid: true, message: "Enter the otp received on your email" });
 };
 
 exports.resendOtp = async (req, res, next) => {
 	const email = req.body.email;
 	const user = User.findOne({ email: email });
 	req.mailText = `Hi ${user.name},\n\nYour new otp is\n\n`;
-	const otp = await otp.findOne({ email: email });
+	const otp = await Otp.findOne({ email: email });
 
 	if (!otp) {
 		await otpMiddleware.sendOTP(req, res, next);

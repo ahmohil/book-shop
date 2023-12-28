@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import DropDown from "../../components/DropDown";
 import Stack from "@mui/material/Stack";
 import { TextField, Button } from "@mui/material";
-
+import { ToastContainer, toast } from "react-toastify";
 const Signup = () => {
 	const navigate = useNavigate();
 
@@ -14,15 +14,8 @@ const Signup = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState({
-		value: "",
-		isTouched: false,
-	});
-	const [showOtp, setShowOtp] = useState(false);
-	const [otp, setOtp] = useState("");
-
+	const [confirmPassword, setConfirmPassword] = useState("");
 	const [selectedRole, setSelectedRole] = useState("buyer");
-	const [errorMsg, setErrorMsg] = useState("");
 
 	const optSelected = (opt) => {
 		setSelectedRole(opt);
@@ -39,7 +32,19 @@ const Signup = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		setErrorMsg("");
+
+		if (!name || !email || !password || !confirmPassword) {
+			toast.error("All Fields are Mandatory", {
+				position: "top-left",
+			});
+			return;
+		}
+		if (password !== confirmPassword) {
+			toast.error("Passwords must match", {
+				position: "top-left",
+			});
+			return;
+		}
 
 		axios
 			.post("http://localhost:3000/signup", {
@@ -54,7 +59,9 @@ const Signup = () => {
 			})
 			.catch((err) => {
 				console.log(err);
-				setErrorMsg(err.response.data.message);
+				toast.error(err.response.data.message, {
+					position: "top-left",
+				});
 			});
 	};
 
@@ -75,14 +82,7 @@ const Signup = () => {
 			<div className="form-container sign-up">
 				<form onSubmit={handleSubmit}>
 					<h1>Create Account</h1>
-					{/*
-					<div className="social-icons">{Social media Icons here }</div>
-					<span>or use your email to registration</span>
-					*/}
-					<div className="error">{errorMsg}</div>
-					{password !== confirmPassword.value && confirmPassword.isTouched ? (
-						<p className="error">Password does not match.</p>
-					) : null}
+
 					<Stack width={"100%"}>
 						<TextField
 							type="text"
@@ -90,7 +90,6 @@ const Signup = () => {
 							id="name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
-							required
 							label="Enter Name"
 							variant="outlined"
 							className="input"
@@ -101,7 +100,6 @@ const Signup = () => {
 							id="name"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
-							required
 							label="Enter Email"
 							variant="outlined"
 							className="input"
@@ -113,7 +111,6 @@ const Signup = () => {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							min={6}
-							required
 							label="Enter Pasword"
 							variant="outlined"
 							className="input"
@@ -122,19 +119,8 @@ const Signup = () => {
 							type="password"
 							name="confirmPassword"
 							id="confirmPassword"
-							value={confirmPassword.value}
-							onChange={(e) =>
-								setConfirmPassword({
-									...confirmPassword,
-									value: e.target.value,
-								})
-							}
-							onBlur={(e) =>
-								setConfirmPassword({
-									...confirmPassword,
-									isTouched: true,
-								})
-							}
+							value={confirmPassword}
+							onChange={(e) => setConfirmPassword(e.target.value)}
 							min={6}
 							required
 							label="Confirm Pasword"
@@ -144,9 +130,7 @@ const Signup = () => {
 						<DropDown options={role} selectedOption={optSelected} />
 					</Stack>
 
-					<button type="submit" disabled={password !== confirmPassword.value ? true : false}>
-						Sign Up
-					</button>
+					<button type="submit">Sign Up</button>
 				</form>
 			</div>
 		</div>

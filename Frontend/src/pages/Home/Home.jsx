@@ -7,12 +7,12 @@ import { faPlus, faMinus, faCartShopping } from "@fortawesome/free-solid-svg-ico
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Button } from "@mui/material";
 import "./Home.css";
+import { useAuth } from "../../context/AuthProvider";
 const BookShopHome = () => {
 	const navigate = useNavigate();
-	const [user, setUser] = useState({});
-	const [isLoggedIn, setIsLoggedIn] = useState("");
 	const [books, setBooks] = useState([]);
 	const [bookCounts, setBookCounts] = useState({});
+	const { user, isLoggedIn } = useAuth();
 
 	const handlePlusClick = (bookId) => {
 		console.log(bookCounts);
@@ -31,16 +31,6 @@ const BookShopHome = () => {
 	};
 
 	useEffect(() => {
-		let isLoggedIn = JSON.parse(localStorage.getItem("isLoggedIn"));
-		if (!isLoggedIn) {
-			navigate("/login");
-		}
-
-		setIsLoggedIn(isLoggedIn);
-		console.log(localStorage.getItem("user"));
-		let user = JSON.parse(localStorage.getItem("user"));
-		setUser(user);
-
 		axios
 			.get(`${import.meta.env.VITE_API_URL}/get-books`)
 			.then((res) => {

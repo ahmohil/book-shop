@@ -17,7 +17,7 @@ exports.sendOTP = async (req, res, next) => {
 	});
 
 	const mailText = `${req.mailText} Your OTP is ${otp}\n\n`;
-	console.log(mailText);
+
 	const mailOptions = {
 		from: process.env.EMAIL,
 		to: email,
@@ -50,11 +50,9 @@ exports.verifyOtp = async (req, res, next) => {
 
 	const otpObj = await Otp.findOne({ email: email, otp: otp });
 
-	console.log("Before invalid message");
 	if (!otpObj) {
 		return res.status(401).json({ message: "Invalid OTP" });
 	}
-	console.log("after invalid message");
 
 	next();
 };

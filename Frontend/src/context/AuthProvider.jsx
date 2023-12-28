@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router";
 import getUser from "../utils/GetUser";
 const AuthContext = createContext();
 
@@ -8,10 +7,10 @@ const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	useEffect(async () => {
+	useEffect(() => {
 		const fetchUser = async () => {
+			const jwt = Cookies.get("jwt");
 			if (!jwt) {
-				navigate("/login");
 				return;
 			}
 
@@ -19,7 +18,6 @@ const AuthProvider = ({ children }) => {
 				const res = await getUser(jwt);
 
 				if (res.status === 400) {
-					navigate("/login");
 					return;
 				}
 
@@ -28,7 +26,7 @@ const AuthProvider = ({ children }) => {
 				setIsLoggedIn(true);
 			} catch (error) {
 				console.error("Error fetching user:", error);
-				navigate("/login");
+				return;
 			}
 		};
 		console.log(user);
@@ -36,9 +34,10 @@ const AuthProvider = ({ children }) => {
 	}, []);
 
 	const login = (user, jwt) => {
+		console.log(user);
+		Cookies.set("jwt", jwt);
 		setUser(user);
 		setIsLoggedIn(true);
-		Cookies.set("jwt", jwt);
 	};
 
 	const logout = () => {
@@ -48,9 +47,11 @@ const AuthProvider = ({ children }) => {
 		Cookies.remove("jwt");
 	};
 
-	return <AuthContext.Provider value={{ user, isLoggedIn }}>{children}</AuthContext.Provider>;
+	return <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>{children}</AuthContext.Provider>;
 };
 
 const useAuth = () => {
 	return useContext(AuthContext);
 };
+
+export { AuthProvider, useAuth };

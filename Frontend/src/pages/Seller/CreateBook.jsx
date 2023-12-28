@@ -3,7 +3,7 @@ import axios from "axios";
 import { TextField, Button, Container, Typography } from "@mui/material";
 import "./seller.css";
 import Cookies from "js-cookie";
-
+import { toast } from "react-toastify";
 const CreateBook = () => {
 	const [bookData, setBookData] = useState({
 		title: "",
@@ -14,6 +14,7 @@ const CreateBook = () => {
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
+
 		setBookData((prevData) => ({
 			...prevData,
 			[name]: value,
@@ -22,6 +23,11 @@ const CreateBook = () => {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
+
+		if (!bookData.title || !bookData.author || !bookData.description || !bookData.price) {
+			toast.error("All fields are mandatory.");
+			return;
+		}
 		const jwtToken = Cookies.get("jwt");
 		axios
 			.post(`${import.meta.env.VITE_API_URL}/add-book`, bookData, {
@@ -37,10 +43,11 @@ const CreateBook = () => {
 					description: "",
 					price: "",
 				});
-				alert("Book Created");
+				toast.success("Book created");
 			})
 			.catch((error) => {
 				console.error("Error adding book", error);
+				toast.error("Error Adding Book");
 			});
 	};
 
@@ -58,7 +65,6 @@ const CreateBook = () => {
 							fullWidth
 							value={bookData.title}
 							onChange={handleChange}
-							required
 							margin="normal"
 						/>
 						<TextField
@@ -90,6 +96,7 @@ const CreateBook = () => {
 							onChange={handleChange}
 							required
 							margin="normal"
+							onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
 						/>
 						<Button type="submit" variant="contained" color="primary" fullWidth>
 							Create Book

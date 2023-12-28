@@ -4,20 +4,17 @@ import "./ResetPass.css";
 import "./Auth.css";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { ToastContainer, toast } from "react-toastify";
+
 const steps = ["Enter Email", "Enter OTP", "Set New Password"];
 
 const ForgotPassword = () => {
 	const navigate = useNavigate();
-	const emailRef = useRef();
 	const [activeStep, setActiveStep] = useState(0);
 	const [email, setEmail] = useState("");
 	const [otp, setOtp] = useState("");
-	const [errorMsg, setErrorMsg] = useState("");
 	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState({
-		value: "",
-		isTouched: false,
-	});
+	const [confirmPassword, setConfirmPassword] = useState("");
 	const [resetToken, setResetToken] = useState({});
 	const handleNext = () => {
 		setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -35,24 +32,33 @@ const ForgotPassword = () => {
 		setOtp(event.target.value);
 	};
 
-	const submitEmail = (e) => {
-		emailRef.current.disabled = true;
-		axios
-			.post("http://localhost:3000/forgot-password", {
+	const submitEmail = async (e) => {
+		const res = await toast.promise(
+			axios.post("http://localhost:3000/forgot-password", {
 				email: email,
-			})
-			.then((res) => {
-				setErrorMsg("");
-				emailRef.current.disabled = false;
-				console.log(res);
-				handleNext();
-			})
-			.catch((err) => {
-				console.log(err);
-				console.log(err.response.data.message);
-				emailRef.current.disabled = false;
-				setErrorMsg(err.response.data.message);
-			});
+			}),
+			{
+				pending: "Validating email...",
+				success: {
+					render: ({ data }) => {
+						return "OTP has been sent.";
+					},
+					icon: "✅",
+				},
+				error: {
+					render: ({ data }) => {
+						return `${data.response.data.message}`;
+					},
+					icon: "❌",
+				},
+			},
+			{
+				position: "top-left",
+			}
+		);
+
+		console.log(res);
+		handleNext();
 	};
 
 	const submitOtp = (e) => {
@@ -68,15 +74,30 @@ const ForgotPassword = () => {
 				handleNext();
 			})
 			.catch((err) => {
-				console.log(res.data.message);
-				setErrorMsg(res.data.message);
+				if (err.response) {
+					toast.error(err.response.data.message, {
+						position: "top-left",
+					});
+				} else if (err.request) {
+					toast.error("Network error.", {
+						position: "top-left",
+					});
+				} else {
+					toast.error("An unexpected error occurred. ", {
+						position: "top-left",
+					});
+				}
 			});
 	};
 
 	const submitPassword = (e) => {
-		{
-			console.log(resetToken);
+		if (password !== confirmPassword) {
+			toast.error("Passwords must match", {
+				position: "top-left",
+			});
+			return;
 		}
+
 		axios
 			.post("http://localhost:3000/change-password", {
 				token: resetToken,
@@ -86,8 +107,19 @@ const ForgotPassword = () => {
 				navigate("/login");
 			})
 			.catch((err) => {
-				console.log(err.response.data.message);
-				setErrorMsg(err.response.data.message);
+				if (err.response) {
+					toast.error(err.response.data.message, {
+						position: "top-left",
+					});
+				} else if (err.request) {
+					toast.error("Network error.", {
+						position: "top-left",
+					});
+				} else {
+					toast.error("An unexpected error occurred. ", {
+						position: "top-left",
+					});
+				}
 			});
 	};
 
@@ -97,12 +129,24 @@ const ForgotPassword = () => {
 				email: email,
 			})
 			.then((res) => {
-				setErrorMsg("");
+				toast.success("OTP resent", {
+					position: "top-left",
+				});
 			})
 			.catch((err) => {
-				console.log(err);
-				console.log(err.response.data.message);
-				setErrorMsg(err.response.data.message);
+				if (err.response) {
+					toast.error(err.response.data.message, {
+						position: "top-left",
+					});
+				} else if (err.request) {
+					toast.error("Network error.", {
+						position: "top-left",
+					});
+				} else {
+					toast.error("An unexpected error occurred. ", {
+						position: "top-left",
+					});
+				}
 			});
 	};
 	const getStepContent = (step) => {
@@ -110,14 +154,12 @@ const ForgotPassword = () => {
 			case 0:
 				return (
 					<div className="stepper-field">
-						<div className="error">{errorMsg}</div>
 						<TextField
 							label="Enter Email"
 							variant="outlined"
 							type="email"
 							fullWidth
 							onChange={handleEmailChange}
-							inputRef={emailRef}
 							value={email}
 						/>
 					</div>
@@ -125,7 +167,6 @@ const ForgotPassword = () => {
 			case 1:
 				return (
 					<div className="stepper-field">
-						<div className="error">{errorMsg}</div>
 						<TextField
 							type="number"
 							label="Enter OTP"
@@ -140,7 +181,6 @@ const ForgotPassword = () => {
 				return (
 					<>
 						<div className="stepper-field">
-							<div className="error">{errorMsg}</div>
 							<TextField
 								label="Enter New Password"
 								variant="outlined"
@@ -155,12 +195,7 @@ const ForgotPassword = () => {
 								variant="outlined"
 								type="password"
 								fullWidth
-								onChange={(e) =>
-									setConfirmPassword({
-										...confirmPassword,
-										value: e.target.value,
-									})
-								}
+								onChange={(e) => setConfirmPassword(e.target.value)}
 							/>
 						</div>
 					</>

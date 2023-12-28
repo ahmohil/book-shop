@@ -4,12 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { TextField, Button } from "@mui/material";
 import "./auth.css";
+import { useAuth } from "../../context/AuthProvider";
+import { ToastContainer, toast } from "react-toastify";
 const Login = () => {
 	const navigate = useNavigate();
 
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [errorMsg, setErrorMsg] = useState("");
+	const { login } = useAuth();
 
 	const clearForm = () => {
 		setEmail("");
@@ -37,23 +39,12 @@ const Login = () => {
 				if (!res.data.isVerified) {
 					return navigate("/signup-otp", { state: { email: email } });
 				}
-				console.log(res.data.user);
-
-				Cookies.set("jwt", res.data.token);
-				const user = res.data.user;
-				localStorage.setItem("user", JSON.stringify(user));
-				localStorage.setItem("isLoggedIn", JSON.stringify(true));
-
-				navigate("/home", {
-					state: {
-						name: res.data.user.name,
-					},
-				});
+				login(res.data.user, res.data.token);
 				clearForm();
 			})
 			.catch((err) => {
 				console.log(err);
-				setErrorMsg(err.response.data.message);
+				toast.error(err.response.data.message);
 			});
 	};
 	return (
@@ -61,11 +52,6 @@ const Login = () => {
 			<div className="form-container sign-in">
 				<form onSubmit={handleSubmit}>
 					<h1>Sign In</h1>
-					{/*
-					<div className="social-icons">{Social icons here}</div>
-					<span>or use your email/password</span>
-					 */}
-					<div className="error">{errorMsg}</div>
 					<TextField
 						type="email"
 						name="email"
