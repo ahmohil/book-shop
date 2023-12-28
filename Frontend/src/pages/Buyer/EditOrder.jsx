@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -137,7 +136,6 @@ const EditOrder = () => {
 
 	return (
 		<div className="screen">
-			<Header />
 			<div className="order-page">
 				<h1>Edit Order</h1>
 				{order && (

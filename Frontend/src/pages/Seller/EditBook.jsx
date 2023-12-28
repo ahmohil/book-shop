@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { TextField, Button, Container, Typography } from "@mui/material";
-import Header from "../../components/Header";
 import "./seller.css";
 import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router";
@@ -66,7 +65,6 @@ const EditBook = () => {
 
 	return (
 		<div className="screen">
-			<Header />
 			<div className="create-book-form">
 				<Container maxWidth="sm">
 					<Typography variant="h4" align="center" gutterBottom>

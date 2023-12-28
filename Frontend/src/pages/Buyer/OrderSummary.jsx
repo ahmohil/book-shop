@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../../components/Header";
 const OrderSummary = ({}) => {
 	const [order, setOrder] = useState("");
 	const [titles, setTitles] = useState("");
@@ -23,8 +22,6 @@ const OrderSummary = ({}) => {
 
 	return (
 		<div className="screen">
-			<Header />
-
 			<div className="order-page">
 				<h2>Your Order has been placed</h2>
 				<h2>Order Details</h2>

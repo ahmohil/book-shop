@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCartShopping, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import Header from "../../components/Header/Header";
 import Cookies from "js-cookie";
 import Button from "@mui/material/Button";
 import "./buyer.css";
@@ -135,7 +134,6 @@ const CreateOrder = ({}) => {
 
 	return (
 		<div className="screen">
-			<Header />
 			<div className="order-page">
 				<table className="order-table">
 					<thead>

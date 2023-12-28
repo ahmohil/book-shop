@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Header from "../../components/Header";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -47,7 +46,6 @@ const SellerBooks = () => {
 	};
 	return (
 		<div className="screen">
-			<Header />
 			<div className="seller-books-page">
 				<h2>Seller Books</h2>
 				<div className="padding"></div>

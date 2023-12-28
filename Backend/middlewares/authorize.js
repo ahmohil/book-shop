@@ -49,8 +49,15 @@ exports.checkIfBuyer = async (req, res, next) => {
 
 exports.appendUser = async (req, res, next) => {
 	const token = req.headers.authorization.split(" ")[1];
-	const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
+	if (!token) {
+		return res.status(400).json({ message: "You have to login" });
+	}
+
+	const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
+	if (!user) {
+		return res.status(400).json({ message: "Token Expired! Login Again" });
+	}
 	req.user = user;
 	next();
 };

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Header from "../../components/Header/Header";
 import { Button, Stack } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -82,7 +81,6 @@ const AllOrders = () => {
 
 	return (
 		<div className="screen">
-			<Header />
 			<div className="all-orders">
 				<h1>All Orders</h1>
 				{orders.map((order) => (

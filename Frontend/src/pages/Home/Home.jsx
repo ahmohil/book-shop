@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
-import Header from "../../components/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus, faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
@@ -54,7 +53,6 @@ const BookShopHome = () => {
 
 	return (
 		<div className="screen">
-			<Header />
 			<div className="home">
 				<div className="home-heading">
 					<h2>All the new books</h2>

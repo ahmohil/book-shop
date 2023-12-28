@@ -200,3 +200,15 @@ exports.paginate = async (req, res, next) => {
 		});
 	}
 };
+
+exports.getUser = async (req, res, next) => {
+	const usr = await User.findOne({ _id: req.user.userId });
+	console.log(usr);
+	return res.status(200).json({
+		user: {
+			name: usr.name,
+			email: usr.email,
+			role: usr.role.toLowerCase(),
+		},
+	});
+};
