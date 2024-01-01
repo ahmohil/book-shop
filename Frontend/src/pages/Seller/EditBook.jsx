@@ -4,16 +4,30 @@ import { TextField, Button, Container, Typography } from "@mui/material";
 import "./seller.css";
 import Cookies from "js-cookie";
 import { useLocation, useNavigate } from "react-router";
+import { toast } from "react-toastify";
+import DropDown from "../../components/DropDown";
+
 const EditBook = () => {
+	const [bookId, setBookId] = useState();
+	const location = useLocation();
+	const navigate = useNavigate();
+
 	const [bookData, setBookData] = useState({
 		title: "",
 		author: "",
 		description: "",
 		price: "",
+		access: "",
 	});
-	const [bookId, setBookId] = useState();
-	const location = useLocation();
-	const navigate = useNavigate();
+
+	const access_level = ["Public", "Private"];
+
+	const optSelected = (opt) => {
+		setBookData((prevData) => ({
+			...prevData,
+			access: opt.toLowerCase(),
+		}));
+	};
 
 	useEffect(() => {
 		const { bookId } = location.state || {};
@@ -27,8 +41,8 @@ const EditBook = () => {
 				},
 			})
 			.then((response) => {
-				const { title, author, description, price } = response.data.book;
-				setBookData({ title, author, description, price });
+				const { title, author, description, price, access } = response.data.book;
+				setBookData({ title, author, description, price, access });
 			})
 			.catch((error) => {
 				console.error("Error fetching book data:", error);
@@ -56,10 +70,11 @@ const EditBook = () => {
 			})
 			.then((response) => {
 				console.log("Book updated successfully", response);
-				alert("Book has been updated");
+				toast.success("Book Updated!");
 			})
 			.catch((error) => {
 				console.error("Error updating book", error);
+				toast.error("Something Went Wrong");
 			});
 	};
 
@@ -109,7 +124,9 @@ const EditBook = () => {
 							onChange={handleChange}
 							required
 							margin="normal"
+							onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
 						/>
+						<DropDown options={access_level} selectedOption={optSelected} label="Book Access Level" />
 						<Button type="submit" variant="contained" color="primary" fullWidth>
 							Update Book
 						</Button>

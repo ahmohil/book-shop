@@ -9,7 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 const Signup = () => {
 	const navigate = useNavigate();
 
-	const role = ["buyer", "seller"];
+	const role = ["Buyer", "Seller"];
 
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ const Signup = () => {
 	const [selectedRole, setSelectedRole] = useState("buyer");
 
 	const optSelected = (opt) => {
-		setSelectedRole(opt);
+		setSelectedRole(opt.toLowerCase());
 	};
 	const clearForm = () => {
 		setName("");
@@ -127,7 +127,7 @@ const Signup = () => {
 							variant="outlined"
 							className="input"
 						/>
-						<DropDown options={role} selectedOption={optSelected} />
+						<DropDown options={role} selectedOption={optSelected} label="Sign Up as" />
 					</Stack>
 
 					<button type="submit">Sign Up</button>

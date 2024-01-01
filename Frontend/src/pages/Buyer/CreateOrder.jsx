@@ -15,16 +15,12 @@ const CreateOrder = ({}) => {
 	const [bookPrices, setBookPrices] = useState({});
 	const [totalBill, setTotalBill] = useState(null);
 	const [billCalculated, setBillCalculated] = useState(false);
-	const [role, setRole] = useState(null);
 	const { user } = useAuth();
 
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	useEffect(() => {
-		if (user) {
-			setRole(user.role);
-		}
 		const fetchData = () => {
 			const jwtToken = Cookies.get("jwt");
 			const { books } = location.state || {};
@@ -98,10 +94,7 @@ const CreateOrder = ({}) => {
 
 	const createOrder = async () => {
 		const jwtToken = Cookies.get("jwt");
-		if (role == "seller") {
-			return;
-		}
-
+		console.log(jwtToken);
 		const orderItems = Object.keys(bookCounts).map((bookId) => ({
 			bookId,
 			quantity: bookCounts[bookId],
@@ -115,19 +108,19 @@ const CreateOrder = ({}) => {
 		try {
 			const response = await axios.post(`${import.meta.env.VITE_API_URL}/create-order/`, requestBody, {
 				headers: {
-					"Content-Type": "application/json",
 					Authorization: `Bearer ${jwtToken}`,
 				},
-				withCredentials: true,
 			});
 
 			if (response.data.message == "Order created") {
+				toast.success("Your order has been created");
 				return navigate("/order-summary", {
 					state: { orderS: response.data.order, bookTitles: bookTitles, bookPrices: bookPrices },
 				});
 			}
 		} catch (error) {
 			console.error("Error creating order:", error);
+			toast.error("Something went wrong");
 		}
 	};
 
@@ -161,15 +154,17 @@ const CreateOrder = ({}) => {
 							</tr>
 						))}
 					</tbody>
+					<tfoot>
+						<tr>
+							<td colSpan={3}>{totalBill && <h2>{`Your total payable amount is $${totalBill.toFixed(2)}`}</h2>}</td>
+							<td>
+								<Button variant="contained" onClick={createOrder} disabled={!totalBill}>
+									Place Order
+								</Button>
+							</td>
+						</tr>
+					</tfoot>
 				</table>
-				{totalBill && (
-					<div className="totalBill">
-						<h2>{`Your total payable amount is $${totalBill.toFixed(2)}`}</h2>
-						<Button variant="contained" onClick={createOrder}>
-							Place Order
-						</Button>
-					</div>
-				)}
 			</div>
 		</div>
 	);

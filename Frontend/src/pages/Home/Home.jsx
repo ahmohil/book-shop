@@ -8,38 +8,55 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Button } from "@mui/material";
 import "./Home.css";
 import { useAuth } from "../../context/AuthProvider";
+import { toast } from "react-toastify";
+import CartIcon from "../../components/Home/CartIcon";
+import Pagination from "@mui/material/Pagination";
+
 const BookShopHome = () => {
 	const navigate = useNavigate();
 	const [books, setBooks] = useState([]);
 	const [bookCounts, setBookCounts] = useState({});
 	const { user, isLoggedIn } = useAuth();
+	const [page, setPage] = useState(1);
+	const [totalPages, setTotalPages] = useState();
 
 	const handlePlusClick = (bookId) => {
+		if (user && user.role == "seller") {
+			toast.error("You can only sell books");
+			return;
+		}
 		console.log(bookCounts);
 		setBookCounts((prevCounts) => ({
 			...prevCounts,
 			[bookId]: (prevCounts[bookId] || 0) + 1,
 		}));
-	};
 
-	const handleMinusClick = (bookId) => {
-		console.log(bookCounts);
-		setBookCounts((prevCounts) => ({
-			...prevCounts,
-			[bookId]: Math.max((prevCounts[bookId] || 0) - 1, 0),
-		}));
+		console.log(Object.keys(bookCounts).length);
 	};
 
 	useEffect(() => {
+		getBooks();
+	}, []);
+	useEffect(() => {
+		getBooks();
+	}, [page]);
+
+	const getBooks = () => {
 		axios
-			.get(`${import.meta.env.VITE_API_URL}/get-books`)
+			.get(`${import.meta.env.VITE_API_URL}/get-books/?pageNo=${page}`)
 			.then((res) => {
 				setBooks(res.data.books);
+				console.log(res);
+				setTotalPages(res.data.totalPages);
 			})
 			.catch((error) => {
-				console.error("Error fetching data:", error);
+				toast.error("Error fetching books");
 			});
-	}, []);
+	};
+
+	const handlePageChange = (event, newPageNumber) => {
+		setPage(newPageNumber);
+	};
 
 	return (
 		<div className="screen">
@@ -52,7 +69,9 @@ const BookShopHome = () => {
 						<Button
 							variant="outlined"
 							onClick={() => navigate("/create-order", { state: { books: bookCounts } })}
-							endIcon={<ShoppingCartIcon />}>
+							startIcon={Object.keys(bookCounts).length > 0 && <CartIcon items={Object.keys(bookCounts).length} />}
+							endIcon={<ShoppingCartIcon />}
+							style={{ height: "40px" }}>
 							View Cart
 						</Button>
 					)}
@@ -63,29 +82,27 @@ const BookShopHome = () => {
 							<div className="book-card-line-1">
 								<h4>Book Title:</h4>
 								<div className="book-card-icons">
-									<Button onClick={() => handleMinusClick(book._id)} variant="outlined">
-										<FontAwesomeIcon icon={faMinus} />
-									</Button>
-
 									<Button onClick={() => handlePlusClick(book._id)} variant="outlined">
+										Add to Cart
 										<FontAwesomeIcon icon={faPlus} />
 									</Button>
-									{/* <FontAwesomeIcon icon={faMinus} onClick={() => handleMinusClick(book._id)} /> */}
-									{/* <FontAwesomeIcon icon={faPlus} onClick={() => handlePlusClick(book._id)} /> */}
 								</div>
 							</div>
 							<h4>{book.title}</h4>
-							<p>
+							<span>
 								<h4>Author:</h4> {book.author}
-							</p>
-							<p>
+							</span>
+							<span>
 								<h4>Price: </h4>${book.price.toFixed(2)}
-							</p>
-							<p>
+							</span>
+							<span>
 								<h4>Description:</h4> {book.description}
-							</p>
+							</span>
 						</div>
 					))}
+				</div>
+				<div className="page-navigation">
+					<Pagination count={totalPages} color="primary" onChange={handlePageChange} page={page} />
 				</div>
 			</div>
 		</div>

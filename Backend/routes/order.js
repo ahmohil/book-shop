@@ -14,5 +14,10 @@ router.delete(
 	authorization.appendUser,
 	OrderController.deleteOrder
 );
-
+router.get(
+	"/get-seller-orders",
+	authorization.checkIfSeller,
+	authorization.appendUser,
+	OrderController.getSellerOrders
+);
 module.exports = router;

@@ -174,6 +174,7 @@ const ForgotPassword = () => {
 							value={otp}
 							fullWidth
 							onChange={handleOtpChange}
+							onKeyDown={(evt) => ["e", "E", "+", "-", "."].includes(evt.key) && evt.preventDefault()}
 						/>
 					</div>
 				);

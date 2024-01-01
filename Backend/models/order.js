@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const mongoosePaginate = require("mongoose-paginate-v2");
 const orderSchema = new Schema({
 	userId: {
 		type: Schema.Types.ObjectId,
@@ -25,6 +25,8 @@ const orderSchema = new Schema({
 		required: true,
 	},
 });
+
+orderSchema.plugin(mongoosePaginate);
 
 orderSchema.methods.getTotalPrice = async function () {
 	await this.populate("items.bookId").execPopulate();

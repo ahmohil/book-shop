@@ -6,7 +6,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { useEffect } from "react";
 
-const DropDown = ({ options, selectedOption }) => {
+const DropDown = ({ options, selectedOption, label }) => {
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [selectedIndex, setSelectedIndex] = React.useState(0);
 	const open = Boolean(anchorEl);
@@ -31,7 +31,7 @@ const DropDown = ({ options, selectedOption }) => {
 		<div>
 			<List component="nav" aria-label="Device settings" sx={{ bgcolor: "background.paper" }}>
 				<ListItem button id="lock-button" aria-expanded={open ? "true" : undefined} onClick={handleClickListItem}>
-					<ListItemText primary="Signup as a" secondary={options[selectedIndex]} />
+					<ListItemText primary={`${label}`} secondary={options[selectedIndex]} />
 				</ListItem>
 			</List>
 			<Menu

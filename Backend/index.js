@@ -12,9 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/", (req, res, next) => {
-	res.status(200).json({ message: "Sever Running" });
-});
 app.use(authRoutes);
 app.use(bookRoutes);
 app.use(orderRoutes);

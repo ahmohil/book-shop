@@ -13,11 +13,12 @@ exports.addBook = async (req, res, next) => {
 	try {
 		book = new Book({
 			title: req.body.title,
-			uploadedBy: user.userId,
+			sellerId: user.userId,
 			author: req.body.author,
 			description: req.body.description,
 			price: req.body.price,
 			uploadedOn: new Date(),
+			access: req.body.access,
 		});
 	} catch {
 		return res.status(500).json({ message: "Internal server error" });
@@ -36,16 +37,32 @@ exports.addBook = async (req, res, next) => {
 
 exports.getSellerBooks = async (req, res, next) => {
 	const user = req.user;
+	const pageNo = parseInt(req.query.pageNo) || 1;
+	const pageSize = 5;
 
-	let books;
 	try {
-		books = await Book.find({ uploadedBy: user.userId });
-		return res.status(200).json({
+		const options = {
+			page: pageNo,
+			limit: pageSize,
+			sort: { _id: -1 },
+		};
+		const result = await Book.paginate({ sellerId: user.userId }, options);
+		console.log(result);
+		const { docs: books, page, totalPages, totalDocs: totalBooks } = result;
+
+		res.status(200).json({
 			message: "Books fetched",
-			books: books,
+			books,
+			pageInfo: {
+				currentPage: page,
+				totalPages,
+				pageSize,
+				totalBooks,
+			},
 		});
-	} catch {
-		return res.status(500).json({ message: "Internal server error" });
+	} catch (error) {
+		console.error("Error fetching books:", error);
+		res.status(500).json({ message: "Internal server error" });
 	}
 };
 
@@ -61,7 +78,7 @@ exports.editBook = async (req, res, next) => {
 	if (!book) {
 		return res.status(404).json({ message: "Book not found" });
 	}
-	if (book.uploadedBy.toString() !== user.userId) {
+	if (book.sellerId.toString() !== user.userId) {
 		return res.status(401).json({ message: "Unauthorized" });
 	}
 
@@ -69,7 +86,7 @@ exports.editBook = async (req, res, next) => {
 	book.author = req.body.author;
 	book.price = req.body.price;
 	book.description = req.body.description;
-
+	book.access = req.body.access;
 	try {
 		const result = await book.save();
 		res.status(200).json({
@@ -103,7 +120,7 @@ exports.deleteBook = async (req, res, next) => {
 
 	const user = req.user;
 
-	Book.deleteOne({ _id: req.params.bookId, uploadedBy: user.userId })
+	Book.deleteOne({ _id: req.params.bookId, sellerId: user.userId })
 		.then((result) => {
 			console.log(result);
 			if (result.deletedCount > 0) {
@@ -131,15 +148,15 @@ exports.deleteBook = async (req, res, next) => {
 
 exports.getBooks = async (req, res, next) => {
 	try {
-		const pageNumber = Number(req.query.page) || 1;
-		const itemsPerPage = Number(req.query.itemsPerPage) || 10;
+		const pageNumber = Number(req.query.pageNo) || 1;
+		const itemsPerPage = Number(req.query.itemsPerPage) || 5;
 
 		const options = {
 			page: pageNumber,
 			limit: itemsPerPage,
 		};
 
-		const result = await Book.paginate({}, options);
+		const result = await Book.paginate({ access: "public" }, options);
 		res.status(200).json({
 			pageNumber: result.page,
 			totalPages: result.totalPages,

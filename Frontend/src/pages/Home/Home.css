@@ -40,3 +40,10 @@
 .book-card-icons:hover {
 	cursor: pointer;
 }
+
+.cart-no-items {
+	background-color: red;
+	color: white;
+	border-radius: 50%;
+	padding-inline: 0.7rem;
+}

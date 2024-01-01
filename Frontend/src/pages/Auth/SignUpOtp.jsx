@@ -64,6 +64,7 @@ const SignUpOtp = ({}) => {
 						label="Enter Otp"
 						variant="outlined"
 						className="input"
+						onKeyDown={(evt) => ["e", "E", "+", "-", "."].includes(evt.key) && evt.preventDefault()}
 					/>
 
 					<button type="submit">Verify OTP</button>

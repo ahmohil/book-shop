@@ -4,13 +4,25 @@ import { TextField, Button, Container, Typography } from "@mui/material";
 import "./seller.css";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import DropDown from "../../components/DropDown";
+
 const CreateBook = () => {
+	const access_level = ["Public", "Private"];
+
 	const [bookData, setBookData] = useState({
 		title: "",
 		author: "",
 		description: "",
 		price: "",
+		access: access_level[0],
 	});
+
+	const optSelected = (opt) => {
+		setBookData((prevData) => ({
+			...prevData,
+			access: opt.toLowerCase(),
+		}));
+	};
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -98,6 +110,7 @@ const CreateBook = () => {
 							margin="normal"
 							onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()}
 						/>
+						<DropDown options={access_level} selectedOption={optSelected} label="Book Access Level" />
 						<Button type="submit" variant="contained" color="primary" fullWidth>
 							Create Book
 						</Button>

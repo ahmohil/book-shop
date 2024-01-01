@@ -1,6 +1,7 @@
 const Book = require("../models/book");
 const Order = require("../models/order");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 exports.createOrder = async (req, res, next) => {
 	if (!req.body.items) {
@@ -66,30 +67,28 @@ exports.createOrder = async (req, res, next) => {
 exports.getOrders = async (req, res, next) => {
 	const user = req.user;
 	const pageNo = parseInt(req.query.pageNo) || 1;
-	const pageSize = 8;
+	const pageSize = 5;
+
 	try {
-		const totalOrders = await Order.countDocuments({ userId: user.userId });
-		const totalPages = Math.ceil(totalOrders / pageSize);
+		const options = {
+			page: pageNo,
+			limit: pageSize,
+			populate: { path: "items.bookId", model: "Book" },
+			sort: { _id: -1 }, // newest first
+		};
 
-		if (pageNo < 1 || pageNo > totalPages) {
-			return res.status(400).json({ message: "Invalid page number" });
-		}
+		const result = await Order.paginate({ userId: user.userId }, options);
 
-		const skip = (pageNo - 1) * pageSize;
-
-		const orders = await Order.find({ userId: user.userId })
-			.skip(skip)
-			.limit(pageSize)
-			.populate({ path: "items.bookId", model: "Book" });
+		const { docs: orders, page, totalPages, totalDocs: totalOrders } = result;
 
 		res.status(200).json({
 			message: "Orders fetched",
-			orders: orders,
+			orders,
 			pageInfo: {
-				currentPage: pageNo,
-				totalPages: totalPages,
-				pageSize: pageSize,
-				totalOrders: totalOrders,
+				currentPage: page,
+				totalPages,
+				pageSize,
+				totalOrders,
 			},
 		});
 	} catch (error) {
@@ -190,5 +189,73 @@ exports.deleteOrder = async (req, res, next) => {
 		return res.status(200).json({ message: "Order deleted" });
 	} catch (error) {
 		return res.status(500).json(error);
+	}
+};
+
+exports.sellerOrder = async (req, res, next) => {
+	const usr = req.user;
+
+	try {
+		const user = await User.findOne({ email: usr.email });
+		const sellerId = user._id;
+
+		const booksInOrders = await Order.aggregate([
+			{
+				$match: {
+					"items.bookId.sellerId": sellerId,
+				},
+			},
+			{
+				$lookup: {
+					from: "books",
+					localField: "items.bookId",
+					foreignField: "_id",
+					as: "bookDetails",
+				},
+			},
+			{
+				$unwind: "$bookDetails",
+			},
+			{
+				$replaceRoot: { newRoot: "$bookDetails" },
+			},
+		]);
+
+		console.log(booksInOrders);
+		return res.status(200).json({ booksInOrders });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ error: "Internal Server Error" });
+	}
+};
+
+exports.getSellerOrders = async (req, res) => {
+	try {
+		const sellerId = req.user.userId;
+
+		const orders = await Order.find().populate("items.bookId");
+
+		const filteredOrders = orders.filter((order) => order.items.every((item) => item.bookId));
+
+		const result = filteredOrders.map((order, index) => {
+			const filteredBooks = order.items
+				.filter((item) => item.bookId.sellerId.equals(sellerId))
+				.map((item) => ({ book: item.bookId, quantity: item.quantity }));
+
+			if (filteredBooks.length > 0) {
+				return {
+					buyerId: order.userId,
+					//order: order,
+					books: filteredBooks,
+				};
+			} else {
+				return null;
+			}
+		});
+
+		return res.status(200).json(result);
+	} catch (error) {
+		console.error("Error fetching seller orders:", error);
+		res.status(500).json({ error: "Internal Server Error" });
 	}
 };

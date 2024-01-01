@@ -10,24 +10,10 @@ const AllOrders = () => {
 	const [orders, setOrders] = useState([]);
 	const [totalPages, setTotalPages] = useState();
 	const [page, setPage] = useState(1);
-
 	const navigate = useNavigate();
+
 	useEffect(() => {
-		const jwtToken = Cookies.get("jwt");
-		axios
-			.get(`${import.meta.env.VITE_API_URL}/my-orders`, {
-				headers: {
-					Authorization: `Bearer ${jwtToken}`,
-				},
-
-				withCredentials: true,
-			})
-			.then((response) => {
-				setOrders(response.data.orders);
-
-				setTotalPages(response.data.pageInfo.totalPages);
-			})
-			.catch((error) => console.error("Error fetching orders:", error));
+		getOrders(page);
 	}, []);
 
 	const getOrders = async (pageNo) => {
@@ -37,8 +23,6 @@ const AllOrders = () => {
 				headers: {
 					Authorization: `Bearer ${jwtToken}`,
 				},
-
-				withCredentials: true,
 			})
 			.then((response) => {
 				setOrders(response.data.orders);
@@ -90,13 +74,20 @@ const AllOrders = () => {
 							<h4>Total Price: ${order.totalPrice.toFixed(2)}</h4>
 						</div>
 						<div>
-							{order.items.map((item) => (
-								<div key={item._id} className="book-info">
-									<h4>{item.bookId.title}</h4>
-									<p>Quantity: {item.quantity}</p>
-									<p>Price: ${item.bookId.price}</p>
-								</div>
-							))}
+							{order.items.map((item, index) => {
+								if (item.bookId == null) {
+									return (
+										<h4 key={item._id} className="book-info">{`Book ${index + 1}: Book Not available anymore`}</h4>
+									);
+								}
+								return (
+									<div key={item._id} className="book-info">
+										<h4>{`Book ${index + 1}: ${item.bookId?.title}`}</h4>
+										<p>Quantity: {item.quantity}</p>
+										<p>Price: ${item.bookId?.price}</p>
+									</div>
+								);
+							})}
 						</div>
 						<div className="order-edit-btn">
 							<Button variant="contained" onClick={() => deleteOrder(order._id)} startIcon={<DeleteIcon />}>
@@ -108,6 +99,7 @@ const AllOrders = () => {
 						</div>
 					</div>
 				))}
+
 				<div className="page-navigation">
 					<Pagination count={totalPages} color="primary" onChange={handlePageChange} page={page} />
 				</div>

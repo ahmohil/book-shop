@@ -29,6 +29,7 @@ td {
 .totalBill {
 	display: flex;
 	justify-content: space-between;
+	padding-right: 5rem;
 }
 
 .all-orders {

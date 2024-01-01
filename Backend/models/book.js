@@ -7,9 +7,14 @@ const bookSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	uploadedBy: {
+	sellerId: {
 		type: Schema.Types.ObjectId,
 		ref: "User",
+		required: true,
+	},
+	access: {
+		type: String,
+		enum: ["public", "private"],
 		required: true,
 	},
 	author: {
